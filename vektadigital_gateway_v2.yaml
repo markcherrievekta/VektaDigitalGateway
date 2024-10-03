@@ -1,0 +1,279 @@
+# openapi2-functions.yaml
+swagger: '2.0'
+info:
+  title: Vekta Digital API Gateway
+  description: API Gateway with a Google Cloud Functions/Run backend
+  version: 1.0.0
+schemes:
+  - https
+produces:
+  - application/json
+securityDefinitions:
+  DHI:
+    type: "apiKey"
+    in: header
+    name: DHI-API-KEY
+    description: DHI weather API
+  firebase-Google:
+    authorizationUrl: "https://accounts.google.com/o/oauth2/v2/auth"
+    flow: "implicit"
+    type: "oauth2"
+    x-google-issuer: "https://securetoken.google.com/vekta-digital"
+    x-google-jwks_uri: "https://www.googleapis.com/service_accounts/v1/metadata/x509/securetoken@system.gserviceaccount.com"
+    x-google-audiences: "vekta-digital"
+  rconnect:
+    authorizationUrl: "https:/..............."
+    flow: "implicit"
+    type: "oauth2"
+    x-google-issuer: "service-1@example-project-12345.iam.gserviceaccount.com"
+    x-google-jwks_uri: "https://www.googleapis.com/robot/v1/metadata/x509/service-1@example-project-12345.iam.gserviceaccount.com"
+tags:
+  - name: weather
+    description: rawData, weather_windRose, weather_avgWindSpeed, yield, weather_getTurbineDB
+  - name: elevation
+    description: elevationSlope
+  - name: siteBuilder
+    description: fillPolygon 
+  - name: search 
+    description: wind, solar, hydro, biomass, solar, geothermal
+  - name: upload
+    description: shpToGeojson
+  - name: download
+    description: persistenceReports
+  - name: admin
+    description: getCogData, NEWADownloader
+paths:
+  ###############   Weather   ##################
+  /weather_getturbinedata:
+    get:
+      tags:
+        - weather
+      summary: Fetches turbine data from Vekta turbine database
+      description: Fetches turbine data from Vekta turbine database
+      operationId: get_turbinedata
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      x-google-backend:             
+        address: "https://europe-west1-vekta-functions-380610.cloudfunctions.net/weather_getturbinedata"
+      responses:
+        200:
+          description: Successful response with turbine data.
+          schema:
+            type: object
+            properties:
+              turbName:
+                type: string
+                example: "NREL Reference 8MW"
+              diameter:
+                type: integer
+                example: 180
+              hub:
+                type: integer
+                example: 112
+              ws:
+                type: array
+                items:
+                  type: number
+                example: [0.0, 0.5, 1.0, 1.5, 2.0, 2.5, 3.0, 3.5, 4.0, 4.5, 5.0, 5.5, 6.0, 6.5, 7.0, 7.5, 8.0, 8.5, 9.0, 9.5, 10.0, 10.5, 11.0, 11.5, 12.0, 12.5, 13.0, 13.5, 14.0, 14.5, 15.0, 15.5, 16.0, 16.5, 17.0, 17.5, 18.0, 18.5, 19.0, 19.5, 20.0, 20.5, 21.0, 21.5, 22.0, 22.5, 23.0, 23.5, 24.0, 24.5, 25.0, 25.5, 26.0, 26.5, 27.0, 27.5, 28.0, 28.5, 29.0, 29.5, 30.0, 30.5, 31.0, 31.5]
+              power:
+                type: array
+                items:
+                  type: number
+                example: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 179.5, 359.0, 561.0, 812.0, 1118.0, 1483.0, 1911.0, 2407.0, 2974.0, 3616.0, 4336.0, 5135.0, 6015.0, 6976.0, 7518.0, 7813.0, 7906.5, 8000.0, 8000.0, 8000.0, 8000.0, 8000.0, 8000.0, 8000.0, 8000.0, 8000.0, 8000.0, 8000.0, 8000.0, 8000.0, 8000.0, 8000.0, 8000.0, 8000.0, 8000.0, 8000.0, 8000.0, 8000.0, 8000.0, 8000.0, 8000.0, 8000.0, 8000.0, 8000.0, 8000.0, 8000.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+              cp:
+                type: array
+                items:
+                  type: number
+                example: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.1799465375, 0.359893075, 0.394988394, 0.416778235, 0.431134474, 0.44050051, 0.446456996, 0.450236796, 0.452289171, 0.453124429, 0.452993022, 0.451930794, 0.450115358, 0.447574657, 0.416671158, 0.376616015, 0.3368247, 0.297033385, 0.2653290935, 0.233624802, 0.210338948, 0.187053094, 0.1695670935, 0.152081093, 0.138696026, 0.125310959, 0.1148917595, 0.10447256, 0.09624122600000001, 0.088009892, 0.08142101900000001, 0.074832146, 0.06949567849999999, 0.064159211, 0.059791175, 0.055423139, 0.051813452, 0.048203765, 0.045194744, 0.042185723, 0.039657448, 0.037129173, 0.034989344500000005, 0.032849516, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+              ct:
+                type: array
+                items:
+                  type: number
+                example: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.26991980625, 0.5398396125, 0.592482591, 0.6251673525, 0.646701711, 0.660750765, 0.669685494, 0.675355194, 0.6784337565, 0.6796866435, 0.679489533, 0.6778961910000001, 0.675173037, 0.6713619854999999, 0.625006737, 0.5649240225000001, 0.5052370500000001, 0.4455500775, 0.39799364024999995, 0.350437203, 0.31550842199999996, 0.280579641, 0.25435064025, 0.2281216395, 0.20804403900000001, 0.1879664385, 0.17233763925, 0.15670884000000002, 0.14436183900000002, 0.13201483800000002, 0.12213152850000002, 0.11224821900000001, 0.10424351775, 0.09623881649999999, 0.08968676249999999, 0.0831347085, 0.077720178, 0.0723056475, 0.067792116, 0.0632785845, 0.059486172000000004, 0.0556937595, 0.05248401675, 0.04927427400000001, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+      security:
+        - firebase-Google: []
+  /weather_windRose:
+    post:
+      tags:
+        - weather
+      summary: Processes wind rose data based on the provided GeoJSON input.
+      description: Processes wind rose data based on the provided GeoJSON input and returns the result.
+      operationId: weather_windRose
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      x-google-backend:             
+        address: "https://europe-west1-vekta-digital.cloudfunctions.net/weather_windRose_auth_4"
+      parameters:
+        - in: body
+          name: body
+          description: GeoJSON input for processing wind rose data.
+          required: true
+          schema:
+            type: object
+            properties:
+              features:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    geometry:
+                      type: object
+                      properties:
+                        coordinates:
+                          type: array
+                          items:
+                            type: number
+                          example: [-5.62986, 49.82381]
+                    properties:
+                      type: object
+                      properties:
+                        hub:
+                          type: integer
+                          example: 100
+                        source:
+                          type: string
+                          example: "era5"
+                        weatherPoint:
+                          type: object
+                          properties:
+                            lat:
+                              type: number
+                              example: 49.82381
+                            lon:
+                              type: number
+                              example: -5.62986
+                        windProfileModel:
+                          type: string
+                          example: "froya"
+                        userRoughnessLength:
+                          type: number
+                          example: 0.0001
+                        sourceWindHeight:
+                          type: number
+                          example: 100
+                        uid:
+                          type: string
+                          example: "user123"
+                        sourceLatitude:
+                          type: number
+                          example: 49.82381
+                        sourceLongitude:
+                          type: number
+                          example: -5.62986
+                        uploadFilename:
+                          type: string
+                          example: "data.csv"
+      responses:
+        200:
+          description: Successful response with wind rose data.
+          schema:
+            type: object
+            properties:
+              data:
+                type: object
+                description: Processed wind rose data.
+              datamessage:
+                type: string
+                description: Additional data message.
+        400:
+          description: Invalid or missing GeoJSON data.
+        405:
+          description: Only POST method is supported.
+        500:
+          description: Internal server error.
+      security:
+        - firebase-Google: []
+  /weather_avgWindSpeed:
+    post:
+      tags:
+        - weather
+      summary: Processes average wind speed data based on the provided GeoJSON input.
+      description: Processes average wind speed data based on the provided GeoJSON input and returns the result.
+      operationId: weather_avgWindSpeed
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      x-google-backend:             
+        address: "https://europe-west1-vekta-digital.cloudfunctions.net/weather_avgWindSpeed_auth_4"
+      parameters:
+        - in: body
+          name: body
+          description: GeoJSON input for processing average wind speed data.
+          required: true
+          schema:
+            type: object
+            properties:
+              features:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    geometry:
+                      type: object
+                      properties:
+                        coordinates:
+                          type: array
+                          items:
+                            type: number
+                          example: [-5.62986, 49.82381]
+                    properties:
+                      type: object
+                      properties:
+                        hub:
+                          type: integer
+                          example: 100
+                        source:
+                          type: string
+                          example: "era5"
+                        weatherPoint:
+                          type: object
+                          properties:
+                            lat:
+                              type: number
+                              example: 49.82381
+                            lon:
+                              type: number
+                              example: -5.62986
+                        windProfileModel:
+                          type: string
+                          example: "froya"
+                        userRoughnessLength:
+                          type: number
+                          example: 0.0001
+                        sourceWindHeight:
+                          type: number
+                          example: 100
+                        uid:
+                          type: string
+                          example: "user123"
+                        sourceLatitude:
+                          type: number
+                          example: 49.82381
+                        sourceLongitude:
+                          type: number
+                          example: -5.62986
+                        uploadFilename:
+                          type: string
+                          example: "data.csv"
+      responses:
+        200:
+          description: Successful response with average wind speed data.
+          schema:
+            type: object
+            properties:
+              data:
+                type: object
+                description: Processed average wind speed data.
+        400:
+          description: Invalid or missing GeoJSON data.
+        405:
+          description: Only POST method is supported.
+        500:
+          description: Internal server error.
+      security:
+        - firebase-Google: []
