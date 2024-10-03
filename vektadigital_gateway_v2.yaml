@@ -9,11 +9,6 @@ schemes:
 produces:
   - application/json
 securityDefinitions:
-  DHI:
-    type: "apiKey"
-    in: header
-    name: DHI-API-KEY
-    description: DHI weather API
   firebase-Google:
     authorizationUrl: "https://accounts.google.com/o/oauth2/v2/auth"
     flow: "implicit"
@@ -21,12 +16,6 @@ securityDefinitions:
     x-google-issuer: "https://securetoken.google.com/vekta-digital"
     x-google-jwks_uri: "https://www.googleapis.com/service_accounts/v1/metadata/x509/securetoken@system.gserviceaccount.com"
     x-google-audiences: "vekta-digital"
-  rconnect:
-    authorizationUrl: "https:/..............."
-    flow: "implicit"
-    type: "oauth2"
-    x-google-issuer: "service-1@example-project-12345.iam.gserviceaccount.com"
-    x-google-jwks_uri: "https://www.googleapis.com/robot/v1/metadata/x509/service-1@example-project-12345.iam.gserviceaccount.com"
 tags:
   - name: weather
     description: rawData, weather_windRose, weather_avgWindSpeed, yield, weather_getTurbineDB
